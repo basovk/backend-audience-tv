@@ -28,8 +28,6 @@ const auth = asyncHandler(async (req, res, next) => {
     // { id: 1, iat: xxx, exp: xxx}
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-    console.log(decoded)
-
     // currently logged in user
     req.user = await User.findById(decoded.id)
 

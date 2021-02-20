@@ -10,6 +10,5 @@ router.post('/login', login)
 router.get('/logout', logout)
 // u get me mora ici auth
 router.get('/me', auth, getMe)
-// mora jos biti update details
 
 export default router

@@ -10,9 +10,6 @@ const ProgramSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    index: {
-      type: Number
-    },
     image: {
       // u bazi podataka samo filename
       type: String

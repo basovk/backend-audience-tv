@@ -1,6 +1,5 @@
 import express from 'express'
 import { getPrograms, getProgram } from '../controllers/programs.js'
-import Program from '../models/Program.js'
 
 const router = express.Router()
 

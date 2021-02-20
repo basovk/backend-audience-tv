@@ -74,7 +74,7 @@ const logout = asyncHandler(async (req, res, next) => {
 // @route       GET /api/auth/me
 // @access      Private
 const getMe = asyncHandler(async (req, res, next) => {
-  // posto ide kroz protect imamo pristup req.user
+  // Imamo pristup req.user
   const user = await User.findById(req.user.id)
 
   res.status(200).json({

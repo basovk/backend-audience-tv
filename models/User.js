@@ -3,63 +3,80 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import geocoder from '../utils/geocoder.js'
 
-const UserSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Please add a name']
-  },
-  email: {
-    type: String,
-    required: [true, 'Please add an email'],
-    unique: true,
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please add a valid email'
-    ]
-  },
-  password: {
-    type: String,
-    required: [true, 'Please add a password'],
-    minLength: 6,
-    select: false
-  },
-  address: {
-    type: String,
-    required: [true, 'Please add an address']
-  },
-  gender: {
-    type: String,
-    enum: ['Male', 'Female'],
-    required: [true, 'Please provide a gender.']
-  },
-  birthdate: {
-    type: Date,
-    required: [true, 'Provide a birthdate.']
-  },
-  location: {
-    // GeoJSON Point
-    type: {
+const UserSchema = new mongoose.Schema(
+  {
+    name: {
       type: String,
-      enum: ['Point']
+      required: [true, 'Please add a name']
     },
-    coordinates: {
-      type: [Number],
-      index: '2dsphere'
+    email: {
+      type: String,
+      required: [true, 'Please add an email'],
+      unique: true,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        'Please add a valid email'
+      ]
     },
-    formattedAddress: String,
-    street: String,
-    city: String,
-    zipcode: String,
-    country: String
+    password: {
+      type: String,
+      required: [true, 'Please add a password'],
+      minLength: 6,
+      select: false
+    },
+    address: {
+      type: String,
+      required: [true, 'Please add an address']
+    },
+    gender: {
+      type: String,
+      enum: ['Male', 'Female'],
+      required: [true, 'Please provide a gender.']
+    },
+    birthdate: {
+      type: Date,
+      required: [true, 'Provide a birthdate.']
+    },
+    location: {
+      // GeoJSON Point
+      type: {
+        type: String,
+        enum: ['Point']
+      },
+      coordinates: {
+        type: [Number],
+        index: '2dsphere'
+      },
+      formattedAddress: String,
+      street: String,
+      city: String,
+      zipcode: String,
+      country: String
+    },
+    age: {
+      type: Number
+    },
+    photo: {
+      // u bazi podataka samo filename
+      type: String
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now()
+    }
   },
-  photo: {
-    // u bazi podataka samo filename
-    type: String
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now()
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
+)
+
+// Reverse populate with virtuals to show users who watched which show but not add them in database program
+UserSchema.virtual('shows', {
+  ref: 'Show',
+  localField: '_id',
+  foreignField: 'user',
+  justOne: false
 })
 
 // Encrypt password using bcrypt
@@ -83,6 +100,14 @@ UserSchema.methods.getSignedJwtToken = function () {
 UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password)
 }
+
+// Calculate user age from birthdate
+UserSchema.pre('save', async function (next) {
+  let birthdate = new Date(`${this.birthdate}`)
+  this.age = 2021 - birthdate.getFullYear()
+
+  next()
+})
 
 // Geocode & create location field
 UserSchema.pre('save', async function (next) {
