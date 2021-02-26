@@ -20,7 +20,7 @@ const ShowSchema = new mongoose.Schema({
   next: {
     type: String
   },
-  users: {
+  usersWatched: {
     type: [Object]
   },
   program: {
@@ -68,6 +68,13 @@ ShowSchema.statics.getAverageAge = async function (bootcampId) {
 }
 
 */
+
+ShowSchema.virtual('users', {
+  ref: 'User',
+  localField: '_id',
+  foreignField: 'show',
+  justOne: false
+})
 
 const Show = mongoose.model('Show', ShowSchema)
 

@@ -7,12 +7,14 @@ import User from '../models/User.js'
 // @route       GET /api/shows
 // @access      Public
 const getShows = asyncHandler(async (req, res, next) => {
+  /*
   const shows = await Program.find().populate({ path: 'program' })
 
   res.status(200).json({
     success: true,
     data: shows
-  })
+  })*/
+  res.status(200).json(res.advancedResults)
 })
 
 // @desc        Get Single Show with users
@@ -54,7 +56,7 @@ const userWatchingShow = asyncHandler(async (req, res, next) => {
   let user = await User.findById(req.user.id)
 
   console.log(user)
-  if (show.users.find((usr) => usr.email === user.email)) {
+  if (show.usersWatched.find((usr) => usr.email === user.email)) {
     return next(
       new ErrorResponse(`You've already said you are watching this show.`, 404)
     )
@@ -62,7 +64,7 @@ const userWatchingShow = asyncHandler(async (req, res, next) => {
 
   show = await Show.findByIdAndUpdate(
     req.params.id,
-    { $push: { users: user } },
+    { $push: { usersWatched: user } },
     {
       new: true,
       runValidators: true

@@ -66,6 +66,10 @@ const UserSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now()
+    },
+    show: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Show'
     }
   },
   {
@@ -73,14 +77,6 @@ const UserSchema = new mongoose.Schema(
     toObject: { virtuals: true }
   }
 )
-
-// Reverse populate with virtuals to show users who watched which show but not add them in database program
-UserSchema.virtual('shows', {
-  ref: 'Show',
-  localField: '_id',
-  foreignField: 'user',
-  justOne: false
-})
 
 // Encrypt password using bcrypt
 UserSchema.pre('save', async function (next) {
