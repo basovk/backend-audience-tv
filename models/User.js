@@ -56,6 +56,9 @@ const UserSchema = new mongoose.Schema(
     age: {
       type: Number
     },
+    token: {
+      type: String
+    },
     photo: {
       // u bazi podataka samo filename
       type: String

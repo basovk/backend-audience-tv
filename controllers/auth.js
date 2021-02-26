@@ -83,6 +83,28 @@ const getMe = asyncHandler(async (req, res, next) => {
   })
 })
 
+// @desc        Store the token
+// @route       PUT /api/auth/expoPushToken
+// @access      Private
+const storeExpoPushToken = asyncHandler(async (req, res, next) => {
+  const { expoPushToken } = req.body
+
+  // Imamo pristup req.user
+  let user = await User.findByIdAndUpdate(
+    req.user.id,
+    { token: expoPushToken },
+    {
+      new: true,
+      runValidators: true
+    }
+  )
+
+  res.status(200).json({
+    success: true,
+    data: user
+  })
+})
+
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
   // Create token
@@ -106,4 +128,4 @@ const sendTokenResponse = (user, statusCode, res) => {
   })
 }
 
-export { register, login, logout, getMe }
+export { register, login, logout, getMe, storeExpoPushToken }
