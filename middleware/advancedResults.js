@@ -1,3 +1,5 @@
+import User from '../models/User.js'
+
 const advancedResults = (model, populate) => async (req, res, next) => {
   let query
 
@@ -45,21 +47,18 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   if (req.query.time) {
     const queryTime = req.query.time
     query = query.find({
-      //  $and: [
-      //   { $nor: { usersWatched: { $size: 0 } } },
-      // {
       $and: [{ timeStart: { $lt: queryTime } }, { timeEnd: { $gt: queryTime } }]
-      // }
-      //]
     })
   }
-
   // Pagination
   // const page = parseInt(req.query.page, 10) || 1
   // const limit = parseInt(req.query.limit, 10) || 25
   // const startIndex = (page - 1) * limit
   // const endIndex = page * limit
   // const total = await model.countDocuments()
+
+  // ukupni broj korisnika
+  const totalNumberOfUsers = await User.countDocuments()
 
   // query = query.skip(startIndex).limit(limit)
 

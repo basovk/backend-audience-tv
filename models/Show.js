@@ -23,6 +23,9 @@ const ShowSchema = new mongoose.Schema({
   usersWatched: {
     type: [Object]
   },
+  numberOfUsersWatched: {
+    type: Number
+  },
   program: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Program',
@@ -40,34 +43,37 @@ const ShowSchema = new mongoose.Schema({
 
 /*
 // Static method to get average of cost tuitions
-ShowSchema.statics.getAverageAge = async function (bootcampId) {
+ShowSchema.statics.getCountOfUserWatched = async function () {
   // calculate average age
-  console.log('Calculating avg cost...'.blue)
+  // console.log('Calculating number of users watched...'.blue)
 
   const obj = await this.aggregate([
-    {
-      $match: { bootcamp: bootcampId }
-    },
-    {
-      $group: {
-        _id: '$bootcamp',
-        averageCost: { $avg: '$tuition' }
-      }
-    }
+    { $addFields: { numberOfUsersWatched: { $size: '$usersWatched' } } },
+    { $out: 'shows' }
   ])
 
-  console.log(obj)
-
   try {
-    await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
-      averageCost: Math.ceil(obj[0].averageCost / 10) * 10
-    })
+    await this.updateMany(
+      {},
+      {
+        //{ numberOfUsersWatched: obj[0].usersWatched }
+        numberOfUsersWatched: Math.ceil(obj[0].numberOfUsersWatched)
+      }
+    )
   } catch (error) {
     console.error(error)
   }
 }
 
-*/
+// Call getAverageCost after save
+ShowSchema.post('save', function () {
+  this.constructor.getCountOfUserWatched()
+})
+
+// Call getAverageCost before remove
+ShowSchema.pre('remove', function () {
+  this.constructor.getCountOfUserWatched()
+})*/
 
 ShowSchema.virtual('users', {
   ref: 'User',

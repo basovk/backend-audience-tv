@@ -62,9 +62,24 @@ const userWatchingShow = asyncHandler(async (req, res, next) => {
     )
   }
 
+  try {
+    show = await Show.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { usersWatched: user }
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    )
+  } catch (error) {
+    console.log(error)
+  }
+
   show = await Show.findByIdAndUpdate(
     req.params.id,
-    { $push: { usersWatched: user } },
+    [{ $set: { numberOfUsersWatched: { $size: '$usersWatched' } } }],
     {
       new: true,
       runValidators: true
