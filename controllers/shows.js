@@ -3,7 +3,7 @@ import asyncHandler from '../middleware/async.js'
 import Show from '../models/Show.js'
 import User from '../models/User.js'
 
-// @desc        Get All Shows and program
+// @desc        Get All Shows with query functionallity
 // @route       GET /api/shows
 // @access      Public
 const getShows = asyncHandler(async (req, res, next) => {

@@ -1,5 +1,3 @@
-import User from '../models/User.js'
-
 const advancedResults = (model, populate) => async (req, res, next) => {
   let query
 
@@ -15,14 +13,8 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   // Create query string
   let queryStr = JSON.stringify(reqQuery)
 
-  // console.log(req.query)
-
-  // console.log(queryStr)
-
   // create operators ($gt, $gte)
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`)
-
-  // console.log(queryStr)
 
   // finding resource
   query = model.find(JSON.parse(queryStr))
@@ -30,9 +22,8 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   // Select fields
   if (req.query.select) {
     const fields = req.query.select.split(',').join(' ')
-    // console.log(fields)
+
     query = query.select(fields)
-    // console.log(query)
   }
 
   // Sort
@@ -50,17 +41,6 @@ const advancedResults = (model, populate) => async (req, res, next) => {
       $and: [{ timeStart: { $lt: queryTime } }, { timeEnd: { $gt: queryTime } }]
     })
   }
-  // Pagination
-  // const page = parseInt(req.query.page, 10) || 1
-  // const limit = parseInt(req.query.limit, 10) || 25
-  // const startIndex = (page - 1) * limit
-  // const endIndex = page * limit
-  // const total = await model.countDocuments()
-
-  // ukupni broj korisnika
-  const totalNumberOfUsers = await User.countDocuments()
-
-  // query = query.skip(startIndex).limit(limit)
 
   // Populate if needed
   if (populate) {
@@ -69,28 +49,9 @@ const advancedResults = (model, populate) => async (req, res, next) => {
 
   // executing query
   const results = await query
-  /*
-  // Pagination result
-  const pagination = {}
-
-  if (endIndex < total) {
-    pagination.next = {
-      page: page + 1,
-      limit
-    }
-  }
-
-  if (startIndex > 0) {
-    pagination.prev = {
-      page: page - 1,
-      limit
-    }
-  }*/
 
   res.advancedResults = {
     success: true,
-    // count: results.length,
-    // pagination,
     data: results
   }
 
